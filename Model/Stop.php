@@ -16,6 +16,7 @@ class Stop extends AppModel {
  * @var array
  */
 	public $belongsTo = array(
+		'Trip',
 		// 'Zone' => array(
 		// 	'className' => 'Zone',
 		// 	'foreignKey' => 'zone_id',

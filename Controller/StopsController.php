@@ -14,8 +14,30 @@ class StopsController extends AppController {
  */
 	public function index() {
 		$this->Stop->recursive = 0;
-		$this->set('stops', $this->paginate());
+		if ($this->request->is('Ajax')) {
+			$this->set('stops', $this->Stop->find('all'));
+			$this->set('_serialize', 'stops');
+		} else {
+			$this->set('stops', $this->paginate());
+		}
 	}
+
+	// public function route($id = null) {
+	// 	if (!$id) {
+	// 		return $this->redirect(array('action' => 'index'));
+	// 	}
+	// 	$this->paginate = array(
+	// 		'contain' => array(
+	// 				'Trip' => array(
+	// 					'Route' => array(
+	// 						'conditions' => array('Route.id' => $id)
+	// 					)
+	// 				)
+	// 		)
+	// 	);
+	// 	$this->set('stops', $this->paginate());
+	// 	$this->render('index');
+	// }
 
 /**
  * view method

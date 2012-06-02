@@ -7,6 +7,19 @@ App::uses('AppController', 'Controller');
  */
 class RoutesController extends AppController {
 
+	public function stops($id = null) {
+		if (!$this->request->is('Ajax') || !$id) {
+			$this->redirect(array('action' => 'index'));
+		}
+		
+		$trips = $this->Route->Trip->findAllByRouteId($id);
+		$stopTimes = $this->Route->Trip->StopTime->findAllByTripId(Set::extract($trips, '/Trip/id'));
+		$stops = $this->Route->Trip->StopTime->Stop->findAllById(Set::extract($stopTimes, '/StopTime/stop_id'));
+		$this->set(compact('stops'));
+		$this->set('_serialize', 'stops');
+	}
+
+
 /**
  * index method
  *

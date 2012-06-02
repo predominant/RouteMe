@@ -37,13 +37,13 @@ class Trip extends AppModel {
 		// 	'fields' => '',
 		// 	'order' => ''
 		// ),
-		'Trip' => array(
-			'className' => 'Trip',
-			'foreignKey' => 'trip_id',
-			'conditions' => '',
-			'fields' => '',
-			'order' => ''
-		),
+		// 'Trip' => array(
+		// 	'className' => 'Trip',
+		// 	'foreignKey' => 'trip_id',
+		// 	'conditions' => '',
+		// 	'fields' => '',
+		// 	'order' => ''
+		// ),
 		// 'Direction' => array(
 		// 	'className' => 'Direction',
 		// 	'foreignKey' => 'direction_id',
@@ -86,19 +86,19 @@ class Trip extends AppModel {
 			'finderQuery' => '',
 			'counterQuery' => ''
 		),
-		'Trip' => array(
-			'className' => 'Trip',
-			'foreignKey' => 'trip_id',
-			'dependent' => false,
-			'conditions' => '',
-			'fields' => '',
-			'order' => '',
-			'limit' => '',
-			'offset' => '',
-			'exclusive' => '',
-			'finderQuery' => '',
-			'counterQuery' => ''
-		)
+		// 'Trip' => array(
+		// 	'className' => 'Trip',
+		// 	'foreignKey' => 'trip_id',
+		// 	'dependent' => false,
+		// 	'conditions' => '',
+		// 	'fields' => '',
+		// 	'order' => '',
+		// 	'limit' => '',
+		// 	'offset' => '',
+		// 	'exclusive' => '',
+		// 	'finderQuery' => '',
+		// 	'counterQuery' => ''
+		// )
 	);
 
 }

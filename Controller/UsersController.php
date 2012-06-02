@@ -7,24 +7,6 @@ App::uses('AppController', 'Controller');
  */
 class UsersController extends AppController {
 
-	public function beforeFilter() {
-		$this->Auth->allow('add');
-		return parent::beforeFilter();
-	}
-
-	public function login() {
-		if (!empty($this->data)) {
-			if ($this->Auth->login()) {
-				return $this->redirect($this->Auth->redirect());
-			}
-			$this->Session->setFlash('Login failed');
-		}
-	}
-
-	public function logout() {
-		return $this->redirect($this->Auth->logout());
-	}
-
 /**
  * index method
  *
@@ -38,13 +20,14 @@ class UsersController extends AppController {
 /**
  * view method
  *
+ * @throws NotFoundException
  * @param string $id
  * @return void
  */
 	public function view($id = null) {
 		$this->User->id = $id;
 		if (!$this->User->exists()) {
-			throw new NotFoundException(__('Invalid %s', __('user')));
+			throw new NotFoundException(__('Invalid user'));
 		}
 		$this->set('user', $this->User->read(null, $id));
 	}
@@ -58,24 +41,10 @@ class UsersController extends AppController {
 		if ($this->request->is('post')) {
 			$this->User->create();
 			if ($this->User->save($this->request->data)) {
-				$this->Session->setFlash(
-					__('The %s has been saved', __('user')),
-					'alert',
-					array(
-						'plugin' => 'TwitterBootstrap',
-						'class' => 'alert-success'
-					)
-				);
+				$this->Session->setFlash(__('The user has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(
-					__('The %s could not be saved. Please, try again.', __('user')),
-					'alert',
-					array(
-						'plugin' => 'TwitterBootstrap',
-						'class' => 'alert-error'
-					)
-				);
+				$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
 			}
 		}
 	}
@@ -83,34 +52,21 @@ class UsersController extends AppController {
 /**
  * edit method
  *
+ * @throws NotFoundException
  * @param string $id
  * @return void
  */
 	public function edit($id = null) {
 		$this->User->id = $id;
 		if (!$this->User->exists()) {
-			throw new NotFoundException(__('Invalid %s', __('user')));
+			throw new NotFoundException(__('Invalid user'));
 		}
 		if ($this->request->is('post') || $this->request->is('put')) {
 			if ($this->User->save($this->request->data)) {
-				$this->Session->setFlash(
-					__('The %s has been saved', __('user')),
-					'alert',
-					array(
-						'plugin' => 'TwitterBootstrap',
-						'class' => 'alert-success'
-					)
-				);
+				$this->Session->setFlash(__('The user has been saved'));
 				$this->redirect(array('action' => 'index'));
 			} else {
-				$this->Session->setFlash(
-					__('The %s could not be saved. Please, try again.', __('user')),
-					'alert',
-					array(
-						'plugin' => 'TwitterBootstrap',
-						'class' => 'alert-error'
-					)
-				);
+				$this->Session->setFlash(__('The user could not be saved. Please, try again.'));
 			}
 		} else {
 			$this->request->data = $this->User->read(null, $id);
@@ -120,6 +76,8 @@ class UsersController extends AppController {
 /**
  * delete method
  *
+ * @throws MethodNotAllowedException
+ * @throws NotFoundException
  * @param string $id
  * @return void
  */
@@ -129,27 +87,13 @@ class UsersController extends AppController {
 		}
 		$this->User->id = $id;
 		if (!$this->User->exists()) {
-			throw new NotFoundException(__('Invalid %s', __('user')));
+			throw new NotFoundException(__('Invalid user'));
 		}
 		if ($this->User->delete()) {
-			$this->Session->setFlash(
-				__('The %s deleted', __('user')),
-				'alert',
-				array(
-					'plugin' => 'TwitterBootstrap',
-					'class' => 'alert-success'
-				)
-			);
+			$this->Session->setFlash(__('User deleted'));
 			$this->redirect(array('action' => 'index'));
 		}
-		$this->Session->setFlash(
-			__('The %s was not deleted', __('user')),
-			'alert',
-			array(
-				'plugin' => 'TwitterBootstrap',
-				'class' => 'alert-error'
-			)
-		);
+		$this->Session->setFlash(__('User was not deleted'));
 		$this->redirect(array('action' => 'index'));
 	}
 }

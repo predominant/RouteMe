@@ -1,10 +1,16 @@
 package routeme.server.timeline;
 
 import java.sql.Connection;
+import java.util.List;
 
 import routeme.server.DatabaseManager;
 import routeme.server.response.ResponseServer;
+import twitter4j.Query;
+import twitter4j.QueryResult;
 import twitter4j.Tweet;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
 
 public class TimelineServer {
 
@@ -24,12 +30,21 @@ public class TimelineServer {
 				// DO NOTHING!!
 			}
 			
-			Tweet[] tweets = this.checkTimeline(conn);
+			List<Tweet> tweets = this.checkTimeline(conn);
 		}
 	}
 	
-	protected Tweet[] checkTimeline(Connection conn) {
-		return new Tweet[]{};
+	protected List<Tweet> checkTimeline(Connection conn) {
+		List<Tweet> tweets = null;
+		Twitter t = new TwitterFactory().getInstance();
+		try {
+			QueryResult result = t.search(new Query("@RouteMe1"));
+			tweets = result.getTweets();
+		} catch (TwitterException e) {
+			System.out.println("Error searching Twitter");
+			System.out.println(e.getMessage());
+		}
+		return tweets;
 	}
 	
 	/**

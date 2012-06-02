@@ -11,9 +11,14 @@ var RouteMe = {
 		}
 	},
 
+	currentPosition: {
+		lat: -35.2747,
+		lon: 149.0738
+	},
+
 	initialize: function() {
 		self = this;
-		var myLatlng = new google.maps.LatLng(this.places.canberra.lat, this.places.canberra.lon);
+		var myLatlng = new google.maps.LatLng(self.currentPosition.lat, self.currentPosition.lon);
 		var myOptions = {
 			center: myLatlng,
 			zoom: 12,
@@ -22,17 +27,17 @@ var RouteMe = {
 			mapTypeId: google.maps.MapTypeId.ROADMAP
 		};
 
-		this.map = new google.maps.Map(document.getElementById(this.mapId), myOptions);
-		google.maps.event.addListener(this.map, 'tilesloaded', this.tilesLoaded)
+		self.map = new google.maps.Map(document.getElementById(self.mapId), myOptions);
+		google.maps.event.addListener(self.map, 'tilesloaded', self.tilesLoaded)
 	},
 
 	tilesLoaded: function() {
-		self.busStops();
+		//self.busStops();
 	},
 
-	busStops: function() {
+	busStops: function(routeId) {
 		var stopIcon = self.stopIcon();
-		$.getJSON('/routes/stops/2-10181.json', function(data) {
+		$.getJSON('/routes/stops/' + routeId + '.json', function(data) {
 			$.each(data, function(k, v) {
 				var m = new google.maps.Marker({
 					map: self.map,

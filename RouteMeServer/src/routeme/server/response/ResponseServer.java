@@ -77,14 +77,18 @@ public class ResponseServer {
 	protected boolean processTweet(String tweet) {
 		System.out.println("Processing tweet: " + tweet);
 		
-		if (this.sendResponse()) {
+		if (this.sendResponse(this.constructResponse())) {
 		} else {
 		}
 		
 		return true;
 	}
 	
-	protected boolean sendResponse() {
+	protected String constructResponse() {
+		return "@predominant Hullo";
+	}
+	
+	protected boolean sendResponse(String message) {
 		System.out.println("Attempting to send Twitter response");
 		Status status = null;
 		try {
@@ -132,7 +136,7 @@ public class ResponseServer {
             	System.out.println("IO Exception");
             	System.out.println(ioe.getMessage());
             }
-			status = twitter.updateStatus("@predominant Testing");
+			status = twitter.updateStatus(message);
 		} catch (TwitterException e) {
 			System.out.println("Failed to update Twitter status");
 			System.out.println(e.getMessage());

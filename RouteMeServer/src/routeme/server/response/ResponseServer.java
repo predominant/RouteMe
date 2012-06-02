@@ -6,7 +6,10 @@ import java.util.Properties;
 
 public class ResponseServer {
 
-	public ResponseServer(Properties prop) {
+	public ResponseServer() {
+	}
+	
+	public void start(Properties prop) {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
@@ -27,7 +30,8 @@ public class ResponseServer {
 		
 		try {
 			prop.load(new FileInputStream("database.properties"));
-			ResponseServer server = new ResponseServer(prop);
+			ResponseServer server = new ResponseServer();
+			server.start(prop);
 		} catch (IOException e) {
 			System.out.println("Failed to load database.properties file");
 			System.exit(2);

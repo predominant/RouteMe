@@ -9,22 +9,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import routeme.server.DatabaseManager;
 import twitter4j.Tweet;
 
 public class ResponseServer {
 
+	DatabaseManager db;
+	
 	public ResponseServer() {
-		try {
-			System.out.println("Resolving MySQL driver");
-			Class.forName("com.mysql.jdbc.Driver");
-		} catch (ClassNotFoundException e) {
-			System.out.println("Unable to load MySQL Driver");
-			System.exit(1);
-		}
+		this.db = new DatabaseManager();
 	}
 	
-	public void start(Properties prop) {
-		Connection conn = this.getConnection(prop);
+	public void start() {
+		Connection conn = this.db.getConnection();
 		
 		while (true) {
 			try {
@@ -80,26 +77,6 @@ public class ResponseServer {
 		return true;
 	}
 	
-	protected Connection getConnection(Properties prop) {
-		Connection conn = null;
-		
-		try {
-			System.out.println("Attempting MySQL connection");
-			conn = DriverManager.getConnection(
-					"jdbc:mysql://" +
-					prop.getProperty("hostname") + "/" +
-					prop.getProperty("database") + "?" +
-					"user=" + prop.getProperty("username") + "&" +
-					"password=" + prop.getProperty("password"));
-			
-		} catch (SQLException e) {
-			System.out.println("Failed to connect to MySQL database");
-			System.exit(3);
-		}
-		
-		return conn;
-	}
-	
 	/**
 	 * @param args
 	 */
@@ -108,16 +85,7 @@ public class ResponseServer {
 		System.out.println("Starting RouteMe ResponseServer");
 		System.out.println("=============================================");
 		
-		Properties prop = new Properties();
-		
-		try {
-			prop.load(new FileInputStream("database.properties"));
-			ResponseServer server = new ResponseServer();
-			server.start(prop);
-		} catch (IOException e) {
-			System.out.println("Failed to load database.properties file");
-			System.exit(2);
-		}
-		
+		ResponseServer server = new ResponseServer();
+		server.start();
 	}
 }

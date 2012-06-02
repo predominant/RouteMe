@@ -31,6 +31,9 @@ public class TimelineServer {
 			}
 			
 			List<Tweet> tweets = this.checkTimeline(conn);
+			for (Tweet tweet : tweets) {
+				System.out.println(tweet.getFromUser() + " - " + tweet.getText());
+			}
 		}
 	}
 	

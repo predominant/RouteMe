@@ -10,7 +10,7 @@ import twitter4j.Tweet;
 
 public class ResponseServer {
 
-	DatabaseManager db;
+	protected DatabaseManager db;
 	
 	public ResponseServer() {
 		this.db = new DatabaseManager();

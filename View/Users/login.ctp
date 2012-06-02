@@ -1,4 +1,5 @@
 <?php
+echo $this->Session->flash('auth');
 echo $this->Form->create();
 	echo $this->Form->inputs(array(
 		'legend' => 'Login',

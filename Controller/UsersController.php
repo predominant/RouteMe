@@ -7,9 +7,22 @@ App::uses('AppController', 'Controller');
  */
 class UsersController extends AppController {
 
+	public function beforeFilter() {
+		$this->Auth->allow('add');
+		return parent::beforeFilter();
+	}
 
 	public function login() {
-		
+		if (!empty($this->data)) {
+			if ($this->Auth->login()) {
+				return $this->redirect($this->Auth->redirect());
+			}
+			$this->Session->setFlash('Login failed');
+		}
+	}
+
+	public function logout() {
+		return $this->redirect($this->Auth->logout());
 	}
 
 /**

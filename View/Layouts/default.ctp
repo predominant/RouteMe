@@ -27,6 +27,7 @@
 		<div class="row-fluid">
 			<?php echo $this->element('sidebar'); ?>
 			<div class="span9">
+				<?php echo $this->Session->flash(); ?>
 				<?php echo $content_for_layout; ?>
 			</div><!--/span-->
 		</div><!--/row-->

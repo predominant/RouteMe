@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -47,9 +48,11 @@ public class ResponseServer {
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("SELECT * FROM `tweets` WHERE `processed` = 0");
-			//while (rs.next()) {
-				this.processTweet("Test Tweet");
-			//}
+			while (rs.next()) {
+				if (this.processTweet(rs)) {
+					this.markCompleted(conn, rs.getString("id"));
+				}
+			}
 		} catch (SQLException e) {
 			System.out.println("Error encountered while querying the database");
 			System.out.println(e.getMessage());
@@ -74,18 +77,54 @@ public class ResponseServer {
 		}
 	}
 	
-	protected boolean processTweet(String tweet) {
-		System.out.println("Processing tweet: " + tweet);
-		
-		if (this.sendResponse(this.constructResponse())) {
-		} else {
+	protected void markCompleted(Connection conn, String id) {
+		try {
+			PreparedStatement pstmt = conn.prepareStatement("UPDATE `tweets` SET `processed` = 1 WHERE `id` = ?");
+			pstmt.setString(1, id);
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			System.out.println("Failed to updated processed status");
+			System.out.println(e.getMessage());
 		}
-		
+	}
+	
+	protected boolean processTweet(ResultSet rs) {
+		try {
+			System.out.println("Processing tweet");
+
+			String username = rs.getString("user_screen_name");
+			if (!this.hasLocation(rs.getString("lat"), rs.getString("lon"))) {
+				this.sendResponse(username, "Please enable Location when tweeting!");
+				return true;
+			}
+			
+			if (this.sendResponse(username, this.constructResponse())) {
+				System.out.println("Response sent successfully!");
+				return true;
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Exception while getting data from ResultSet");
+			System.out.println(e.getMessage());
+		}
 		return true;
 	}
 	
+	protected boolean hasLocation(String lat, String lon) {
+		return lat != null && lon != null;
+	}
+	
 	protected String constructResponse() {
-		return "@predominant Hullo";
+		// Replace this with real data
+		String routeId = "1234";
+		String location = "Cnr First St & River Rd";
+		String walkTime = "3 min";
+		String linkUrl = "http://bit.ly/123rnn";
+		
+		return "Bus " + routeId + ": " + location + " (" + walkTime + ") " + linkUrl;
+	}
+	
+	protected boolean sendResponse(String to, String message) {
+		return this.sendResponse("@" + to + " " + message);
 	}
 	
 	protected boolean sendResponse(String message) {
@@ -135,7 +174,9 @@ public class ResponseServer {
             } catch (IOException ioe) {
             	System.out.println("IO Exception");
             	System.out.println(ioe.getMessage());
+            	return false;
             }
+			System.out.println("Attempting Tweet: " + message);
 			status = twitter.updateStatus(message);
 		} catch (TwitterException e) {
 			System.out.println("Failed to update Twitter status");

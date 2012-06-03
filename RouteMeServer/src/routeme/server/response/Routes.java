@@ -16,20 +16,19 @@ import java.util.HashMap;
 public class Routes {
 	protected DatabaseManager db;
 	
-	public void Routes() {
-		this.db = new DatabaseManager()
+	public Routes() {
+		this.db = new DatabaseManager();
 	}
-	public Vector2D GetClosestStop(Vector2D destinationVector){
+	public Stops GetClosestStop(Vector2D destinationVector){
 		//Get all the stops from the database
 		Statement stmt = null;
 		ResultSet rs = null;
-		Connection conn = db.getConnection();
-		HashMap<Stops, Double> stops;
+		Connection conn = this.db.getConnection();
+		Stops closestStop = null;
 		try {
 			stmt = conn.createStatement();
 			rs = stmt.executeQuery("select id, lat, lon from `stops`");
 			
-			stops = new HashMap<Stops, Double>();
 			//Dump all the stops and the distance between them and the destination into a 
 			//HashMap
 			while(rs.next()) {
@@ -37,14 +36,26 @@ public class Routes {
 						rs.getString("id"),
 						new Vector2D(
 								Double.parseDouble(rs.getString("lat")),
-								Double.parseDouble(rs.getString("long"))
+								Double.parseDouble(rs.getString("lon"))
 						)
 				);
 				
-				stops.put(aStop, Vector2D.distance(
-						destinationVector, aStop.getVector())
-				);
-			}			
+				
+				if(closestStop == null) {
+					//should only be called the first loop
+					closestStop = aStop;
+				}
+				else {
+					//If aStop is closer to the destination, set it to be the 
+					//closest stop
+					if(Vector2D.distance(aStop.getVector(), destinationVector) <
+					Vector2D.distance(closestStop.getVector(), destinationVector))
+					{
+						closestStop = aStop;
+					}
+				}
+			}
+			return closestStop;
 		} 
 		catch (SQLException e) {
 			// TODO Auto-generated catch block

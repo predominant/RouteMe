@@ -8,6 +8,7 @@ import java.util.List;
 import java.sql.PreparedStatement;
 import routeme.server.DatabaseManager;
 import routeme.server.response.ResponseServer;
+import twitter4j.GeoLocation;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Tweet;
@@ -45,26 +46,45 @@ public class TimelineServer {
 
 				//Cycle through all the retrieved tweets, looking for new ones.
 				for (Tweet tweet : tweets) {
+					System.out.print("Checking Tweet ID: " + tweet.getId() + " : ");
 					//System.out.println(tweet.getFromUser() + " - " + tweet.getText());
 					rs = stmt.executeQuery("SELECT * FROM `tweets` WHERE `id` = " + tweet.getId());
 					
-					if (!rs.next()) {
-						//This is a new tweet, save it.
-					      pstmt = conn.prepareStatement("insert into `tweets` "
-									+ "(id, coordinates, created_at, text, " 
-									+ "in_reply_to_user_id, in_reply_to_screen_name, "
-									+ "user_screen_name, user_location) " 
-									+ "values(?, ?, ?, ?, ?, ?, ?, ?) ");
-					      pstmt.setString(1, tweet.getId()+"");
-					      pstmt.setString(2, tweet.getGeoLocation()+"");
-					      pstmt.setString(3, tweet.getCreatedAt()+"");
-					      pstmt.setString(4, tweet.getText());
-					      pstmt.setString(5, tweet.getToUserId()+"");
-					      pstmt.setString(6, tweet.getToUser());
-					      pstmt.setString(7, tweet.getFromUser());
-					      pstmt.setString(8, tweet.getLocation());
-					      pstmt.executeUpdate();
+					if (rs.next()) {
+						System.out.println("OLD");
+						continue;
 					}
+					System.out.println("NEW");
+
+					GeoLocation geo = tweet.getGeoLocation();
+					String lat = null;
+					String lon = null;
+					if (geo != null) {
+						lat = geo.getLatitude() + "";
+						lon = geo.getLongitude() + "";
+					}
+					
+					// This is a new tweet, save it.
+					System.out.println("New tweet. Adding to database");
+					System.out.println("  From       : " + tweet.getFromUser());
+					System.out.println("  Coordinates: " + lat + ", " + lon);
+					System.out.println("  Text       : " + tweet.getText());
+
+					pstmt = conn.prepareStatement("insert into `tweets` "
+							+ "(id, lat, lon, created_at, text, " 
+							+ "in_reply_to_user_id, in_reply_to_screen_name, "
+							+ "user_screen_name, user_location) " 
+							+ "values(?, ?, ?, ?, ?, ?, ?, ?, ?) ");
+					pstmt.setString(1, tweet.getId()+"");
+					pstmt.setString(2, lat);
+					pstmt.setString(3, lon);
+					pstmt.setString(4, tweet.getCreatedAt()+"");
+					pstmt.setString(5, tweet.getText());
+					pstmt.setString(6, tweet.getToUserId()+"");
+					pstmt.setString(7, tweet.getToUser());
+					pstmt.setString(8, tweet.getFromUser());
+					pstmt.setString(9, tweet.getLocation());
+					pstmt.executeUpdate();
 				}
 			} catch (SQLException e) {
 				System.out.println("Error encountered while querying the database");
